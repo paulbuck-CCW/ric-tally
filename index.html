@@ -3,173 +3,598 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RIC Assessment Tally</title>
+<title>RIC Tally</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; background: #f5f5f3; color: #222; padding: 16px; }
-  h1 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
-  .subtitle { font-size: 13px; color: #666; margin-bottom: 20px; }
-  .query-row { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-  input[type=text] { flex: 1; min-width: 140px; padding: 10px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; background: #fff; }
-  button { padding: 10px 20px; background: #333; color: #fff; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; }
-  button.secondary { background: #888; margin-left: 4px; }
-  .section { background: #fff; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 16px; overflow: hidden; }
-  .section-header { padding: 12px 16px; background: #f0f0ee; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; }
-  .section-title { font-weight: 600; font-size: 14px; }
-  .badge { font-size: 12px; font-weight: 600; background: #333; color: #fff; border-radius: 12px; padding: 2px 10px; }
-  .badge.zero { background: #bbb; }
-  .item { padding: 12px 16px; border-bottom: 1px solid #eee; }
-  .item:last-child { border-bottom: none; }
-  .item-main { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
-  .item-detail { font-size: 13px; color: #555; }
-  .item-note { font-size: 13px; color: #888; font-style: italic; margin-top: 2px; }
-  .empty { padding: 16px; font-size: 13px; color: #999; text-align: center; }
-  .error { padding: 12px 16px; background: #fff3f3; color: #c00; font-size: 13px; border-radius: 8px; margin-bottom: 16px; }
-  .context-bar { font-size: 13px; color: #666; margin-bottom: 16px; padding: 10px 14px; background: #fff; border: 1px solid #ddd; border-radius: 6px; }
-  .debug { margin-top: 20px; padding: 12px; background: #f8f8f8; border: 1px solid #ddd; border-radius: 6px; font-size: 12px; font-family: monospace; white-space: pre-wrap; word-break: break-all; display: none; }
+:root {
+  --navy: #01105C;
+  --navy-h: #0D1F7C;
+  --red: #D72638;
+  --bg: #F3F3FE;
+  --surface: #FFFFFF;
+  --border: #E0E0E8;
+  --text: #1A1A1A;
+  --muted: #6B7280;
+  --ok-bg: #DCFCE7;
+  --ok-text: #166534;
+  --warn-bg: #FEE2E2;
+  --warn-text: #991B1B;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 15px;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ── Header ── */
+.app-header {
+  background: var(--navy);
+  padding: 18px 16px 14px;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(1,16,92,.25);
+}
+.app-header img {
+  display: block;
+  width: 136px;
+  height: auto;
+  margin: 0 auto 10px;
+}
+.hdr-label {
+  color: rgba(255,255,255,.6);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-bottom: 2px;
+}
+.hdr-title {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* ── Layout ── */
+.main { padding: 14px 14px 32px; max-width: 620px; margin: 0 auto; }
+
+/* ── Buttons ── */
+.btn {
+  display: block;
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  -webkit-appearance: none;
+}
+.btn-primary { background: var(--navy); color: #fff; }
+.btn-primary:active { background: var(--navy-h); }
+.btn-outline {
+  background: transparent;
+  color: var(--navy);
+  border: 1.5px solid var(--border);
+  margin-top: 8px;
+}
+.btn-outline:active { background: var(--bg); }
+.btn-sm {
+  display: inline-block;
+  width: auto;
+  padding: 8px 14px;
+  font-size: 13px;
+  border-radius: 7px;
+}
+
+/* ── Input view ── */
+.card {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 22px 18px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.07);
+  border: 1px solid var(--border);
+  margin-bottom: 10px;
+}
+.card h2 { font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 16px; }
+.field { margin-bottom: 12px; }
+.field label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: .05em; }
+.field input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 15px;
+  background: var(--surface);
+  color: var(--text);
+  -webkit-appearance: none;
+}
+.field input:focus { outline: none; border-color: var(--navy); box-shadow: 0 0 0 3px rgba(1,16,92,.1); }
+
+/* ── Badges ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.badge-ok   { background: var(--ok-bg);   color: var(--ok-text); }
+.badge-grey { background: #F3F4F6;         color: var(--muted); }
+.badge-navy { background: var(--navy);     color: #fff; }
+.badge-zero { background: #E5E7EB;         color: var(--muted); }
+.badge-warn { background: var(--warn-bg);  color: var(--warn-text); }
+
+/* ── Banners ── */
+.banner {
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+.banner-warn { background: var(--warn-bg); border: 1px solid #FECACA; color: var(--warn-text); }
+.banner-warn strong { display: block; font-weight: 700; margin-bottom: 4px; }
+.banner-err  { background: var(--warn-bg); color: var(--warn-text); }
+
+/* ── Room cards ── */
+.room-card {
+  background: var(--surface);
+  border-radius: 12px;
+  margin-bottom: 9px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.room-hdr {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 13px 14px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.room-hdr:active { background: var(--bg); }
+.room-info { flex: 1; min-width: 0; }
+.room-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.room-meta { display: flex; gap: 5px; flex-wrap: wrap; }
+.chevron { color: var(--muted); font-size: 18px; flex-shrink: 0; margin-top: 1px; transition: transform .2s; }
+.room-card.open .chevron { transform: rotate(90deg); }
+.room-body { display: none; border-top: 1px solid var(--border); }
+.room-card.open .room-body { display: block; }
+
+/* ── Entries ── */
+.section {
+  padding: 12px 14px;
+}
+.section + .section { border-top: 1px solid var(--border); }
+.section-lbl {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.entry {
+  background: var(--bg);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  border: 1px solid var(--border);
+}
+.entry:last-child { margin-bottom: 0; }
+.entry-name { font-size: 14px; font-weight: 600; }
+.entry-detail { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.entry-note { font-size: 13px; color: #9CA3AF; font-style: italic; margin-top: 2px; }
+.entry-nil { font-size: 13px; color: #9CA3AF; text-align: center; padding: 8px 0; }
+
+.room-actions {
+  display: flex;
+  gap: 8px;
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  flex-wrap: wrap;
+}
+
+/* ── States ── */
+.loading { text-align: center; padding: 48px 0; color: var(--muted); }
+.spinner {
+  width: 30px; height: 30px;
+  border: 3px solid var(--border);
+  border-top-color: var(--navy);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  margin: 0 auto 12px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.empty { text-align: center; padding: 48px 16px; color: var(--muted); font-size: 14px; }
+.empty-icon { font-size: 36px; margin-bottom: 12px; }
+.empty-head { font-weight: 600; color: var(--navy); margin-bottom: 6px; }
+
+/* ── Section labels ── */
+.hub-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); padding: 14px 0 6px; }
+
+/* ── RAF status ── */
+.raf-note { font-size: 12px; color: var(--muted); text-align: center; padding: 6px 0 2px; min-height: 24px; }
+
+/* ── Debug ── */
+.dbg { display: none; background: #f8f8f8; border-radius: 8px; padding: 12px; font-size: 11px; font-family: monospace; white-space: pre-wrap; word-break: break-all; margin-top: 16px; }
 </style>
 </head>
 <body>
 
-<h1>RIC Assessment Tally</h1>
-<p class="subtitle">Materials and pre-existing damage entered for a room</p>
+<header class="app-header" id="appHeader">
+  <img src="https://ricsolutions.com/wp-content/uploads/2025/07/ric-solutions_Reverse-Red.svg" alt="RIC Solutions">
+  <div class="hdr-label" id="hdrLabel" style="display:none">Assessment Hub</div>
+  <div class="hdr-title" id="hdrTitle">Tally</div>
+</header>
 
-<div class="query-row">
-  <input type="text" id="jobInput" placeholder="Job number e.g. RIC8181" />
-  <input type="text" id="roomInput" placeholder="Room name e.g. Living Room" />
-  <button onclick="loadTally()">Load</button>
-  <button class="secondary" onclick="toggleDebug()">Debug</button>
+<div class="main">
+
+  <!-- ── INPUT VIEW ── -->
+  <div id="vInput">
+    <div class="card">
+      <h2>Open Assessment Hub</h2>
+      <div class="field">
+        <label>Job Number</label>
+        <input type="text" id="jobIn" placeholder="e.g. RIC8181" autocorrect="off" autocapitalize="characters">
+      </div>
+      <button class="btn btn-primary" onclick="doLoad()" style="margin-top:4px">Open Hub</button>
+    </div>
+    <div id="inputErr" class="banner banner-err" style="display:none"></div>
+    <p style="font-size:13px;color:var(--muted);text-align:center;margin-top:12px;">
+      Open this page as <strong>?job=RIC####</strong> to go straight to the hub.
+    </p>
+  </div>
+
+  <!-- ── HUB VIEW ── -->
+  <div id="vHub" style="display:none">
+    <div id="rafNote" class="raf-note"></div>
+    <div id="dupeBanner" style="display:none" class="banner banner-warn"></div>
+    <div id="hubContent"></div>
+    <div id="hubActions" style="display:none; margin-top:14px;">
+      <a id="addRoomBtn" href="#" class="btn btn-primary">+ Add Room (RAF)</a>
+    </div>
+  </div>
+
+  <!-- ── ROOM DETAIL VIEW ── -->
+  <div id="vDetail" style="display:none">
+    <div id="detailContent"></div>
+    <a id="backBtn" href="#" class="btn btn-outline" style="margin-top:10px">&#8592; Back to Hub</a>
+  </div>
+
+  <div id="dbg" class="dbg"></div>
 </div>
 
-<div id="contextBar" style="display:none" class="context-bar"></div>
-<div id="error" style="display:none" class="error"></div>
-<div id="results"></div>
-<div id="debug" class="debug"></div>
-
 <script>
-const API_KEY = 'd1ccf0e64fd2b12f301db69ae9301a15';
-const MAF_ID = '260938295996883';
-const PAF_ID = '260938235927871';
-let debugLog = [];
+const API  = 'd1ccf0e64fd2b12f301db69ae9301a15';
+const JAF  = '260937865719878';
+const RAF  = '260937541488872';
+const MAF  = '260938295996883';
+const PAF  = '260938235927871';
+const RAF_FORM = 'https://form.jotform.com/260937541488872';
+const MAF_FORM = 'https://form.jotform.com/260938295996883';
+const PAF_FORM = 'https://form.jotform.com/260938235927871';
 
-function log(msg) { debugLog.push(msg); document.getElementById('debug').textContent = debugLog.join('\n'); }
-function toggleDebug() { const d = document.getElementById('debug'); d.style.display = d.style.display === 'none' ? 'block' : 'none'; }
+let logs = [];
+const log = msg => { logs.push(msg); document.getElementById('dbg').textContent = logs.join('\n'); };
 
-const params = new URLSearchParams(window.location.search);
-if (params.get('job')) document.getElementById('jobInput').value = params.get('job');
-if (params.get('room')) document.getElementById('roomInput').value = params.get('room');
-if (params.get('job') && params.get('room')) loadTally();
+// ── Field helpers ──────────────────────────────────────────────
+function field(answers, name) {
+  const f = Object.values(answers || {}).find(a => a.name === name);
+  if (!f) return '';
+  const a = f.answer;
+  if (!a) return '';
+  if (typeof a === 'string') return a.trim();
+  if (Array.isArray(a)) return a.filter(Boolean).join(', ');
+  if (typeof a === 'object') return Object.values(a).filter(Boolean).join(', ');
+  return String(a).trim();
+}
 
+function parseRooms(raw) {
+  if (!raw) return [];
+  return raw.split(/[;,\n|]/).map(r => r.trim()).filter(Boolean);
+}
+
+// ── Fetch ──────────────────────────────────────────────────────
 async function fetchSubs(formId, label) {
-  const url = `https://api.jotform.com/form/${formId}/submissions?apiKey=${API_KEY}&limit=100&orderby=created_at`;
-  log(`\nFetching ${label}: ${url}`);
+  const url = `https://api.jotform.com/form/${formId}/submissions?apiKey=${API}&limit=1000&orderby=created_at`;
+  log(`Fetching ${label}…`);
   const r = await fetch(url);
-  log(`${label} status: ${r.status}`);
   const d = await r.json();
-  log(`${label} responseCode: ${d.responseCode}, count: ${(d.content||[]).length}`);
-  if (d.content && d.content[0]) {
-    const firstAnswers = d.content[0].answers || {};
-    log(`${label} first sub fields: ${Object.values(firstAnswers).map(a => a.name + '=' + JSON.stringify(a.answer)).join(' | ')}`);
-  }
+  log(`${label}: ${(d.content || []).length} subs`);
   return d.content || [];
 }
 
-function getField(answers, name) {
-  const f = Object.values(answers).find(a => a.name === name);
-  return f ? (f.answer || '') : '';
+// ── RAF room rewrite ───────────────────────────────────────────
+async function rewriteRAF(rooms) {
+  if (!rooms.length) return;
+  const opts = [...rooms, 'Other'].join('|');
+  try {
+    const check = await fetch(`https://api.jotform.com/form/${RAF}/question/18?apiKey=${API}`);
+    const cd = await check.json();
+    if ((cd.content?.options || '') === opts) { log('RAF opts match — skip'); return; }
+    const put = await fetch(`https://api.jotform.com/form/${RAF}/question/18?apiKey=${API}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question: { options: opts } })
+    });
+    const pd = await put.json();
+    log(`RAF rewrite: ${pd.responseCode} ${pd.message}`);
+    const note = document.getElementById('rafNote');
+    note.textContent = pd.responseCode === 200 ? 'Room list updated \u2713' : 'Room list: update pending';
+    setTimeout(() => { note.textContent = ''; }, 4000);
+  } catch (e) { log(`RAF rewrite err: ${e.message}`); }
 }
 
-function renderMAF(items) {
-  if (!items.length) return '<div class="empty">No damaged materials recorded</div>';
-  return items.map(s => {
-    const a = s.answers;
-    const mat = getField(a, 'material_name');
-    const dmg = getField(a, 'material_damage_type');
-    const sal = getField(a, 'material_salvageability');
-    const note = getField(a, 'material_comments');
-    return `<div class="item">
-      <div class="item-main">${mat}</div>
-      <div class="item-detail">${dmg}${sal ? ' &mdash; ' + sal : ''}</div>
-      ${note ? `<div class="item-note">${note}</div>` : ''}
-    </div>`;
-  }).join('');
+// ── Duplicate detection ────────────────────────────────────────
+function findDupes(mafList, pafList) {
+  const mats = mafList.map(s => field(s.answers, 'material_name').toLowerCase()).filter(Boolean);
+  const pres  = pafList.map(s => field(s.answers, 'preexisting_material_name').toLowerCase()).filter(Boolean);
+  const out = [];
+  // MAF×MAF
+  const mc = {};
+  mats.forEach(m => { mc[m] = (mc[m] || 0) + 1; });
+  Object.entries(mc).forEach(([m, n]) => { if (n > 1) out.push(`"${m}" appears ${n}\u00d7 in materials`); });
+  // MAF×PAF
+  const ps = new Set(pres), seen = new Set();
+  mats.forEach(m => { if (ps.has(m) && !seen.has(m)) { out.push(`"${m}" in both materials and pre-existing`); seen.add(m); } });
+  return out;
 }
 
-function renderPAF(items) {
-  if (!items.length) return '<div class="empty">No pre-existing damage recorded</div>';
-  return items.map(s => {
-    const a = s.answers;
-    const mat = getField(a, 'preexisting_material_name');
-    const dmg = getField(a, 'preexisting_damage_type');
-    const note = getField(a, 'preexisting_notes');
-    return `<div class="item">
-      <div class="item-main">${mat}</div>
-      <div class="item-detail">${dmg}</div>
-      ${note ? `<div class="item-note">${note}</div>` : ''}
-    </div>`;
-  }).join('');
+function roomDupe(room, mafJob, pafJob) {
+  return findDupes(
+    mafJob.filter(s => field(s.answers, 'room_name') === room),
+    pafJob.filter(s => field(s.answers, 'room_name') === room)
+  ).length > 0;
 }
 
-async function loadTally() {
-  const job = document.getElementById('jobInput').value.trim();
-  const room = document.getElementById('roomInput').value.trim();
-  const errEl = document.getElementById('error');
-  const resEl = document.getElementById('results');
-  const ctxEl = document.getElementById('contextBar');
+// ── View router ────────────────────────────────────────────────
+function show(v) {
+  ['vInput', 'vHub', 'vDetail'].forEach(id => {
+    document.getElementById(id).style.display = id === v ? '' : 'none';
+  });
+}
 
-  debugLog = [];
-  errEl.style.display = 'none';
-  if (!job || !room) { errEl.textContent = 'Enter both a job number and room name.'; errEl.style.display = 'block'; return; }
+function setHeader(label, title) {
+  const lbl = document.getElementById('hdrLabel');
+  lbl.style.display = label ? '' : 'none';
+  if (label) lbl.textContent = label;
+  document.getElementById('hdrTitle').textContent = title;
+}
 
-  log(`Query: job="${job}" room="${room}"`);
-  resEl.innerHTML = '<div style="padding:16px;color:#666;font-size:13px;">Loading&hellip;</div>';
-  ctxEl.style.display = 'none';
+// ── Input view ─────────────────────────────────────────────────
+function doLoad() {
+  const job = document.getElementById('jobIn').value.trim().toUpperCase();
+  const err = document.getElementById('inputErr');
+  err.style.display = 'none';
+  if (!job) { err.textContent = 'Enter a job number.'; err.style.display = 'block'; return; }
+  window.location.search = `?job=${encodeURIComponent(job)}`;
+}
+
+// ── Hub view ───────────────────────────────────────────────────
+async function loadHub(job) {
+  setHeader('Assessment Hub', job);
+  document.title = `${job} \u2013 RIC Tally`;
+  const content = document.getElementById('hubContent');
+  const dupe = document.getElementById('dupeBanner');
+  content.innerHTML = `<div class="loading"><div class="spinner"></div>Loading ${job}\u2026</div>`;
+  dupe.style.display = 'none';
+  document.getElementById('hubActions').style.display = 'none';
 
   try {
-    const [mafSubs, pafSubs] = await Promise.all([fetchSubs(MAF_ID, 'MAF'), fetchSubs(PAF_ID, 'PAF')]);
+    const [jafSubs, rafSubs, mafSubs, pafSubs] = await Promise.all([
+      fetchSubs(JAF, 'JAF'), fetchSubs(RAF, 'RAF'),
+      fetchSubs(MAF, 'MAF'), fetchSubs(PAF, 'PAF'),
+    ]);
 
-    const maf = mafSubs.filter(s => {
-      const j = getField(s.answers, 'job_ric_number');
-      const r = getField(s.answers, 'room_name');
-      log(`MAF sub: job="${j}" room="${r}" match=${j===job && r===room}`);
-      return j === job && r === room;
-    });
-    const paf = pafSubs.filter(s => {
-      const j = getField(s.answers, 'job_ric_number');
-      const r = getField(s.answers, 'room_name');
-      log(`PAF sub: job="${j}" room="${r}" match=${j===job && r===room}`);
-      return j === job && r === room;
-    });
+    const jafJob = jafSubs.filter(s => field(s.answers, 'job_ric_number') === job);
+    const rafJob = rafSubs.filter(s => field(s.answers, 'job_ric_number') === job);
+    const mafJob = mafSubs.filter(s => field(s.answers, 'job_ric_number') === job);
+    const pafJob = pafSubs.filter(s => field(s.answers, 'job_ric_number') === job);
 
-    log(`\nMatched: MAF=${maf.length} PAF=${paf.length}`);
-    document.getElementById('debug').textContent = debugLog.join('\n');
+    log(`Matched: JAF=${jafJob.length} RAF=${rafJob.length} MAF=${mafJob.length} PAF=${pafJob.length}`);
 
-    ctxEl.innerHTML = `<strong>${job}</strong> &mdash; ${room}`;
-    ctxEl.style.display = 'block';
+    // Rooms from latest JAF submission
+    let identified = [];
+    if (jafJob.length) {
+      const latest = jafJob[jafJob.length - 1];
+      const raw = field(latest.answers, 'site_identified_areas');
+      log(`JAF identified_areas raw: "${raw}"`);
+      identified = parseRooms(raw);
+    }
 
-    resEl.innerHTML = `
-      <div class="section">
-        <div class="section-header">
-          <span class="section-title">Damaged materials</span>
-          <span class="badge ${maf.length === 0 ? 'zero' : ''}">${maf.length}</span>
-        </div>
-        ${renderMAF(maf)}
-      </div>
-      <div class="section">
-        <div class="section-header">
-          <span class="section-title">Pre-existing damage</span>
-          <span class="badge ${paf.length === 0 ? 'zero' : ''}">${paf.length}</span>
-        </div>
-        ${renderPAF(paf)}
-      </div>`;
-  } catch(e) {
-    log(`ERROR: ${e.message}`);
-    document.getElementById('debug').textContent = debugLog.join('\n');
-    resEl.innerHTML = '';
-    errEl.textContent = 'Could not load data: ' + e.message;
-    errEl.style.display = 'block';
+    // Rooms with RAF submitted
+    const rafRooms = new Set(rafJob.map(s => field(s.answers, 'room_name')).filter(Boolean));
+
+    // All rooms: identified + any in RAF/MAF/PAF not yet identified
+    const mafRooms = new Set(mafJob.map(s => field(s.answers, 'room_name')).filter(Boolean));
+    const pafRooms = new Set(pafJob.map(s => field(s.answers, 'room_name')).filter(Boolean));
+    const allRooms = [...new Set([...identified, ...rafRooms, ...mafRooms, ...pafRooms])];
+
+    // RAF rewrite in background — don't block render
+    if (identified.length) rewriteRAF(identified);
+
+    // Job-level duplicate banner
+    const dupes = findDupes(mafJob, pafJob);
+    if (dupes.length) {
+      dupe.innerHTML = `<strong>\u26a0 Duplicate materials detected</strong>${dupes.map(d => `<div style="margin-top:3px">&#8226; ${d}</div>`).join('')}`;
+      dupe.style.display = 'block';
+    }
+
+    // Add Room button
+    document.getElementById('addRoomBtn').href = `${RAF_FORM}?job_ric_number=${encodeURIComponent(job)}`;
+    document.getElementById('hubActions').style.display = 'block';
+
+    if (!allRooms.length) {
+      content.innerHTML = `<div class="empty"><div class="empty-icon">&#128203;</div><div class="empty-head">No rooms identified yet</div>Submit the JAF with affected rooms ticked, then reload this hub.</div>`;
+      return;
+    }
+
+    const n = allRooms.length;
+    content.innerHTML =
+      `<div class="hub-label">${n} Room${n !== 1 ? 's' : ''}</div>` +
+      allRooms.map(room => buildCard(room, rafRooms, mafJob, pafJob, job)).join('');
+
+  } catch (e) {
+    log(`Hub error: ${e.message}`);
+    content.innerHTML = `<div class="banner banner-err">Could not load data: ${e.message}</div>`;
   }
 }
+
+function buildCard(room, rafRooms, mafJob, pafJob, job) {
+  const entered  = rafRooms.has(room);
+  const roomMaf  = mafJob.filter(s => field(s.answers, 'room_name') === room);
+  const roomPaf  = pafJob.filter(s => field(s.answers, 'room_name') === room);
+  const hasDupe  = roomDupe(room, mafJob, pafJob);
+  const je = encodeURIComponent(job), re = encodeURIComponent(room);
+
+  return `
+<div class="room-card" id="rc_${room.replace(/[^a-z0-9]/gi,'_')}">
+  <div class="room-hdr" onclick="toggleCard(this)">
+    <div class="room-info">
+      <div class="room-name">${room}</div>
+      <div class="room-meta">
+        <span class="badge ${entered ? 'badge-ok' : 'badge-grey'}">${entered ? '\u2713 Entered' : 'Not entered'}</span>
+        <span class="badge ${roomMaf.length ? 'badge-navy' : 'badge-zero'}">${roomMaf.length} mat</span>
+        <span class="badge ${roomPaf.length ? 'badge-navy' : 'badge-zero'}">${roomPaf.length} pre</span>
+        ${hasDupe ? '<span class="badge badge-warn">\u26a0 Dupe</span>' : ''}
+      </div>
+    </div>
+    <span class="chevron">&#8250;</span>
+  </div>
+  <div class="room-body">
+    ${buildEntries(roomMaf, roomPaf)}
+    <div class="room-actions">
+      <a href="${MAF_FORM}?job_ric_number=${je}&room_name=${re}" class="btn btn-primary btn-sm">+ Material</a>
+      <a href="${PAF_FORM}?job_ric_number=${je}&room_name=${re}" class="btn btn-outline btn-sm" style="margin:0">+ Pre-existing</a>
+      <a href="?job=${je}&room=${re}" class="btn btn-outline btn-sm" style="margin:0;margin-left:auto">Detail \u2192</a>
+    </div>
+  </div>
+</div>`;
+}
+
+function buildEntries(mafList, pafList) {
+  let h = '';
+
+  h += `<div class="section"><div class="section-lbl">Damaged Materials (${mafList.length})</div>`;
+  if (mafList.length) {
+    h += mafList.map(s => {
+      const name = field(s.answers, 'material_name');
+      const dmg  = field(s.answers, 'material_damage_type');
+      const sal  = field(s.answers, 'material_salvageability');
+      const note = field(s.answers, 'material_comments');
+      return `<div class="entry">
+        <div class="entry-name">${name || '\u2014'}</div>
+        <div class="entry-detail">${[dmg, sal].filter(Boolean).join(' \u00b7 ')}</div>
+        ${note ? `<div class="entry-note">${note}</div>` : ''}
+      </div>`;
+    }).join('');
+  } else { h += '<div class="entry-nil">None recorded</div>'; }
+  h += '</div>';
+
+  h += `<div class="section"><div class="section-lbl">Pre-existing Damage (${pafList.length})</div>`;
+  if (pafList.length) {
+    h += pafList.map(s => {
+      const name = field(s.answers, 'preexisting_material_name');
+      const dmg  = field(s.answers, 'preexisting_damage_type');
+      const note = field(s.answers, 'preexisting_notes');
+      return `<div class="entry">
+        <div class="entry-name">${name || '\u2014'}</div>
+        <div class="entry-detail">${dmg}</div>
+        ${note ? `<div class="entry-note">${note}</div>` : ''}
+      </div>`;
+    }).join('');
+  } else { h += '<div class="entry-nil">None recorded</div>'; }
+  h += '</div>';
+
+  return h;
+}
+
+function toggleCard(hdr) {
+  hdr.closest('.room-card').classList.toggle('open');
+}
+
+// ── Room detail view ───────────────────────────────────────────
+async function loadDetail(job, room) {
+  setHeader(job, room);
+  document.title = `${room} \u2013 ${job}`;
+  document.getElementById('backBtn').href = `?job=${encodeURIComponent(job)}`;
+
+  const content = document.getElementById('detailContent');
+  content.innerHTML = `<div class="loading"><div class="spinner"></div>Loading\u2026</div>`;
+
+  try {
+    const [mafSubs, pafSubs] = await Promise.all([fetchSubs(MAF, 'MAF'), fetchSubs(PAF, 'PAF')]);
+    const maf = mafSubs.filter(s => field(s.answers,'job_ric_number')===job && field(s.answers,'room_name')===room);
+    const paf = pafSubs.filter(s => field(s.answers,'job_ric_number')===job && field(s.answers,'room_name')===room);
+    const dupes = findDupes(maf, paf);
+    const je = encodeURIComponent(job), re = encodeURIComponent(room);
+
+    let h = '';
+    if (dupes.length) {
+      h += `<div class="banner banner-warn"><strong>\u26a0 Duplicates in this room</strong>${dupes.map(d=>`<div style="margin-top:3px">&#8226; ${d}</div>`).join('')}</div>`;
+    }
+    h += `<div class="card" style="padding:0;overflow:hidden">`;
+    h += buildEntries(maf, paf);
+    h += `<div class="room-actions">
+      <a href="${MAF_FORM}?job_ric_number=${je}&room_name=${re}" class="btn btn-primary btn-sm">+ Material</a>
+      <a href="${PAF_FORM}?job_ric_number=${je}&room_name=${re}" class="btn btn-outline btn-sm" style="margin:0">+ Pre-existing</a>
+    </div></div>`;
+    content.innerHTML = h;
+  } catch (e) {
+    content.innerHTML = `<div class="banner banner-err">Could not load: ${e.message}</div>`;
+  }
+}
+
+// ── Init ───────────────────────────────────────────────────────
+(function () {
+  const p    = new URLSearchParams(window.location.search);
+  const job  = p.get('job');
+  const room = p.get('room');
+
+  if (job) document.getElementById('jobIn').value = job;
+
+  if (job && room) {
+    show('vDetail'); loadDetail(job, room);
+  } else if (job) {
+    show('vHub'); loadHub(job);
+  } else {
+    show('vInput');
+    document.getElementById('jobIn').addEventListener('keydown', e => { if (e.key === 'Enter') doLoad(); });
+  }
+
+  // Triple-tap header to toggle debug log
+  let taps = 0;
+  document.getElementById('appHeader').addEventListener('click', () => {
+    if (++taps >= 3) {
+      const d = document.getElementById('dbg');
+      d.style.display = d.style.display === 'none' ? 'block' : 'none';
+      taps = 0;
+    }
+    setTimeout(() => { taps = 0; }, 900);
+  });
+})();
 </script>
 </body>
 </html>
